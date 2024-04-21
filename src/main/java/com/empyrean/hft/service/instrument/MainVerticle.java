@@ -12,18 +12,23 @@ public class MainVerticle extends AbstractVerticle {
 
     server.connectHandler(socket -> {
       socket.handler(buffer -> {
-        System.out.println("I received some bytes: " + buffer.length());
+        System.out.println("Received bytes: " + buffer.length());
+
+        socket.write("Server Response: " + buffer.toString().toUpperCase());
+      });
+      socket.write("You are now connected!\n");
+
+      socket.closeHandler(v -> {
+        System.out.println("The socket has been closed");
       });
     });
 
-    server
-      .listen(0, "localhost")
-      .onComplete(res -> {
-        if (res.succeeded()) {
-          System.out.println("Server is now listening on actual port: " + server.actualPort());
-        } else {
-          System.out.println("Failed to bind!");
-        }
-      });
+    server.listen(9090, "localhost").onComplete(res -> {
+      if (res.succeeded()) {
+        System.out.println("Server is now listening on actual port: " + server.actualPort());
+      } else {
+        System.out.println("Failed to bind!");
+      }
+    });
   }
 }
